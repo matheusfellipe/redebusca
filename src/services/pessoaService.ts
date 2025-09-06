@@ -20,7 +20,7 @@ export const personService = {
     porPagina = 10,
   }: PessoaFiltroRequest) {
     const { data } = await api.get<PaginationResponse<Pessoa>>(
-      "/v1/pessoas/aberto/filtro",
+      "/pessoas/aberto/filtro",
       {
         params: {
           nome,
@@ -36,7 +36,7 @@ export const personService = {
   },
 
   async getById(id: number) {
-    const { data } = await api.get<Pessoa>(`/v1/pessoas/${id}`);
+    const { data } = await api.get<Pessoa>(`/pessoas/${id}`);
     return data;
   },
 };
