@@ -17,7 +17,7 @@ Permite busca, paginação, detalhamento de registros e envio de informações p
 
 ### 1. Pré-requisitos
 
-- [Node.js](https://nodejs.org/) (opcional, apenas se rodar sem Docker)  
+- [Node.js](https://nodejs.org/) 
 - [Docker](https://docs.docker.com/get-docker/) instalado  
 
 ---
@@ -28,7 +28,11 @@ Permite busca, paginação, detalhamento de registros e envio de informações p
 git clone https://github.com/matheusfellipe/redebusca.git
 cd redebusca
 
-docker build -t redebusca .
+docker compose up --build -d
 
 
-docker run -d -p 8080:3000 --name redebusca-container redebusca
+### 3. Acessar a aplicação
+
+Após subir os containers, abra seu navegador e clique no link abaixo:
+
+[Open Rede Busca](http://localhost:3000)
