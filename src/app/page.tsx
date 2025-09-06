@@ -5,20 +5,26 @@ import { useState, useEffect } from 'react';
 import { personService } from "@/services/pessoaService";
 import { Pessoa, Sexo } from "@/types/domain/Pessoa";
 import PersonCard from '@/components/domain/PessoaCard';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
-  const [selectedPerson, setSelectedPerson] = useState<Pessoa | null>(null);
+  
   const [personData, setPersonData] = useState<Pessoa[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const router = useRouter();
+
+  const handleSelect = (person: Pessoa) => {
+      router.push(`/pessoa/${person.id}`);
+    };
 
   useEffect(() => {
-    const fetchData = async () => {
-     
-        const response = await personService.list({});
-        console.log("🚀 ~ fetchData ~ response:", response)
-        setPersonData(response.content || []);
-        setLoading(false);
+  const fetchData = async () => {
+    
+      const response = await personService.list({});
+      console.log("🚀 ~ fetchData ~ response:", response)
+      setPersonData(response.content || []);
+      setLoading(false);
      
     };
     fetchData();
@@ -76,7 +82,7 @@ export default function Home() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredData.map((pessoa) => (
-              <PersonCard key={pessoa.id} person={pessoa} />
+              <PersonCard key={pessoa.id} person={pessoa} onSelect={handleSelect} />
             ))}
           </div>
         )}
