@@ -1,106 +1,41 @@
+'use client';
+
+
 import { Pessoa } from "@/types/domain/Pessoa";
 import Card from "../ui/Card";
-import Button from "../ui/Button";
 
 interface PersonCardProps {
-  person: Pessoa | null;
-  loading?: boolean;
-
+  person: Pessoa;
+  onSelect?: (person: Pessoa) => void;
 }
 
-const PersonCard: React.FC<PersonCardProps> = ({ person, loading }) => {
-  if (loading) {
-    return (
-      <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-        <Card>Carregando...</Card>
-      </div>
-    );
-  }
-
-  if (!person) return null;
+export default function PersonCard({ person, onSelect }: PersonCardProps) {
+  const isFound = () => !!person.ultimaOcorrencia?.dataLocalizacao;
 
   return (
-    <div
-      className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-    
-    >
-      <div className="w-full max-w-md" onClick={(e) => e.stopPropagation()}>
-        <Card
-          title={person.nome}
-          subtitle={`Caso #${person.ultimaOcorrencia?.ocoId}`}
-        >
-          {/* Photo */}
-          {/* {person.urlFoto && (
-            <div className="mb-4 flex justify-center">
-              <Image
-                src={person.urlFoto}
-                alt={person.nome}
-                width={120}
-                height={120}
-                className="rounded-lg object-cover"
-              />
-            </div>
-          )} */}
-
-          {/* Info */}
-          <div className="space-y-2 text-sm">
-            <div>
-              <span className="font-medium text-gray-700">Idade:</span>
-              <span className="ml-2">{person.idade} anos</span>
-            </div>
-            <div>
-              <span className="font-medium text-gray-700">Sexo:</span>
-              <span className="ml-2">{person.sexo}</span>
-            </div>
-            <div>
-              <span className="font-medium text-gray-700">Desaparecimento:</span>
-              {/* <span className="ml-2">
-                {formatDate(person.ultimaOcorrencia?.dtDesaparecimento)}
-              </span> */}
-            </div>
-            {person.ultimaOcorrencia?.localDesaparecimentoConcat && (
-              <div>
-                <span className="font-medium text-gray-700">Local:</span>
-                <span className="ml-2">
-                  {person.ultimaOcorrencia.localDesaparecimentoConcat}
-                </span>
-              </div>
-            )}
-            {person.ultimaOcorrencia?.ocorrenciaEntrevDesapDTO?.informacao && (
-              <div>
-                <span className="font-medium text-gray-700">Informações:</span>
-                <p className="mt-1 p-2 bg-gray-50 rounded text-xs">
-                  {person.ultimaOcorrencia.ocorrenciaEntrevDesapDTO.informacao}
-                </p>
-              </div>
-            )}
+    <div onClick={() => onSelect?.(person)} className="cursor-pointer">
+      <Card
+        title={person.nome}
+        subtitle={`${person.idade} anos • ${person.sexo}`}
+        footer={
+          <div className="flex justify-between items-center">
+            <span className="text-xs text-gray-500">
+              #{person.ultimaOcorrencia?.ocoId || "-"}
+            </span>
+            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+              isFound()
+                ? 'bg-green-100 text-green-800'
+                : 'bg-red-100 text-red-800'
+            }`}>
+              {isFound() ? 'Encontrado' : 'Desaparecido'}
+            </span>
           </div>
-          <div className="mt-4 flex gap-3">
-            <Button
-              onClick={() =>
-                alert("Contate: 190 (PM), 197 (PC), 181 (Disque Denúncia)")
-              }
-              className="flex-1"
-            >
-              Tenho Info
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => {
-                navigator.clipboard.writeText(
-                  `${person.nome} - Caso #${person.ultimaOcorrencia?.ocoId}`
-                );
-                alert("Copiado!");
-              }}
-              className="flex-1"
-            >
-              Compartilhar
-            </Button>
-          </div>
-        </Card>
-      </div>
+        }
+      >
+        <p className="text-xs text-gray-500 truncate">
+          {person.ultimaOcorrencia?.localDesaparecimentoConcat || 'Local não informado'}
+        </p>
+      </Card>
     </div>
   );
-};
-
-export default PersonCard;
+}

@@ -76,34 +76,7 @@ export default function Home() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredData.map((pessoa) => (
-              <div
-                key={pessoa.id}
-                onClick={() => setSelectedPerson(pessoa)}
-                className="bg-white rounded-lg shadow hover:shadow-lg cursor-pointer transition-shadow"
-              >
-              
-                <div className="p-4">
-                  <h3 className="font-semibold text-gray-900 mb-2">{pessoa.nome}</h3>
-                  <p className="text-sm text-gray-600 mb-2">
-                    {pessoa.idade} anos • {pessoa.sexo}
-                  </p>
-                  <p className="text-xs text-gray-500 truncate">
-                    {pessoa.ultimaOcorrencia?.localDesaparecimentoConcat || 'Local não informado'}
-                  </p>
-                  <div className="mt-3 flex justify-between items-center">
-                    <span className="text-xs text-gray-500">
-                      #{pessoa.ultimaOcorrencia?.ocoId}
-                    </span>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      isFound(pessoa)
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {isFound(pessoa) ? 'Encontrado' : 'Desaparecido'}
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <PersonCard key={pessoa.id} person={pessoa} />
             ))}
           </div>
         )}
@@ -115,10 +88,7 @@ export default function Home() {
         )}
       </main>
 
-      {/* Modal */}
-      {selectedPerson && (
-       <PersonCard person={selectedPerson}  loading={loading} />
-      )}
+      
     </div>
   );
 }
