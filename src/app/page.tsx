@@ -1,15 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
-import { personService } from "@/services/pessoaService";
-import { Pessoa, PessoaFiltroValues, Sexo } from "@/types/domain/Pessoa";
+import { Pessoa, PessoaFiltroValues } from "@/types/domain/Pessoa";
 import PersonCard from '@/components/domain/PessoaCard';
 import { useRouter } from 'next/navigation';
 
-import { PaginationResponse } from '@/types/infra/Paginacao';
 import PessoaFiltro from '@/components/domain/PessoaFiltro';
-import { Flex, Loader, Pagination, Text } from '@mantine/core';
+import { Flex, Pagination } from '@mantine/core';
 import { usePessoaList } from '@/hooks/usePessoaList';
 import ErrorMessage from '@/components/domain/ErrorMessage';
 

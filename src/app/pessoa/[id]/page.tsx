@@ -1,43 +1,61 @@
 'use client';
 
-
 import Card from "@/components/ui/Card";
 import { personService } from "@/services/pessoaService";
 import { Pessoa } from "@/types/domain/Pessoa";
-import { use, useEffect, useState } from "react";
+import { Suspense, use, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button, Loader } from "@mantine/core";
+import dynamic from "next/dynamic";
+
+
+const AddInfoForm = dynamic(() => import('@/components/domain/AddInfoForm'), {
+  loading: () => <Loader size="sm" />,
+  ssr: false, 
+});
 
 interface Props {
   params: Promise<{ id: number }>;
 }
 
 const PessoaPage: React.FC<Props> = ({ params }) => {
-     const { id } = use(params);
+  const { id } = use(params);
+  const router = useRouter();
 
+  const [personData, setPersonData] = useState<Pessoa>({} as Pessoa);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
 
-    const [personData, setPersonData] = useState<Pessoa>({} as Pessoa);
-    const [loading, setLoading] = useState(true);
-
-
-    useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
-    
+      try {
         const response = await personService.getById(id);
-        console.log("🚀 ~ fetchData ~ response:", response)
-        setPersonData(response || []);
+        setPersonData(response || ({} as Pessoa));
+      } catch (err) {
+        console.error(err);
+      } finally {
         setLoading(false);
-        
+      }
     };
     fetchData();
-    }, [id]);
+  }, [id]);
 
-   if (loading) return <div>Loading...</div>;
-  if (!personData) return <div>Person not found</div>;
+  if (loading) return <Loader color="blue" />;
 
   const statusLabel = personData.ultimaOcorrencia?.encontradoVivo ? "Encontrado" : "Desaparecido";
   const statusColor = personData.ultimaOcorrencia?.encontradoVivo ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800";
 
   return (
-    <div className="p-4 max-w-3xl mx-auto">
+    <div className="p-4 flex flex-col items-center w-full max-w-xl">
+      <Button
+        variant="outline"
+        size="sm"
+        className="mb-4 self-start"
+        onClick={() => router.push("/")}
+      >
+        ← Voltar para Home
+      </Button>
+
       <Card
         title={personData.nome}
         subtitle={`${personData.idade} anos • ${personData.sexo}`}
@@ -72,23 +90,25 @@ const PessoaPage: React.FC<Props> = ({ params }) => {
           </>
         )}
 
-        {/* {personData.ultimaOcorrencia?.listaCartaz?.length > 0 && (
-          <div className="mt-2">
-            <h4 className="text-sm font-semibold mb-1">Cartazes:</h4>
-            <ul>
-              {personData.ultimaOcorrencia.listaCartaz.map((cartaz, idx) => (
-                <li key={idx}>
-                  <a href={cartaz.urlCartaz} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline text-sm">
-                    {cartaz.tipoCartaz}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )} */}
+        
+        <Button
+          variant="light"
+          size="sm"
+          className="mt-4"
+          onClick={() => setShowForm(prev => !prev)}
+        >
+          {showForm ? "Fechar formulário" : "Adicionar informações"}
+        </Button>
+
+        {/* Lazy loaded form */}
+        {showForm && (
+          <Suspense fallback={<Loader size="sm" />}>
+            <AddInfoForm personId={personData.id} />
+          </Suspense>
+        )}
       </Card>
     </div>
   );
 };
 
-export default PessoaPage; 
+export default PessoaPage;

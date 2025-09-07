@@ -3,6 +3,7 @@ import { Roboto } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/ui/Header";
 import { MantineProvider } from "@mantine/core";
+import '@mantine/dates/styles.css';
 
 const monstserrat  = Roboto({
   subsets: ['latin'],
