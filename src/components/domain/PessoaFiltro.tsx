@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 
-import { Search, Filter, ChevronDown, X, User, Calendar, Eraser } from "lucide-react";
+import { Filter, ChevronDown, Eraser } from "lucide-react";
 import { PessoaFiltroValues } from "@/types/domain/Pessoa";
 
-import { ActionIcon, Button, Group, NumberInput, Select, TextInput } from "@mantine/core";
+import { Button, Group, NumberInput, Select, TextInput } from "@mantine/core";
 
 interface PessoaFiltroProps {
   onFilterChange: (filters: PessoaFiltroValues) => void;
