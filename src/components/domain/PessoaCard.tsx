@@ -1,43 +1,110 @@
 'use client';
 
-
 import { Pessoa } from "@/types/domain/Pessoa";
-import Card from "../ui/Card";
+import { Card, Text, Badge, Group, Image, Stack, Box } from '@mantine/core';
 
 interface PersonCardProps {
   person: Pessoa;
   onSelect?: (person: Pessoa) => void;
 }
 
-const PersonCard: React.FC<PersonCardProps> = ({ person, onSelect }: PersonCardProps) => {
-  const isFound = () => !!person.ultimaOcorrencia?.dataLocalizacao;
+const PersonCard: React.FC<PersonCardProps> = ({ person, onSelect }) => {
+  const { nome, idade, sexo, urlFoto, ultimaOcorrencia } = person;
+  const { dataLocalizacao, ocoId, localDesaparecimentoConcat } = ultimaOcorrencia || {};
+
+  const isFound = !!dataLocalizacao;
+
 
   return (
-    <div onClick={() => onSelect?.(person)} className="cursor-pointer">
-      <Card
-        title={person.nome}
-        subtitle={`${person.idade} anos • ${person.sexo}`}
-        footer={
-          <div className="flex justify-between items-center">
-            <span className="text-xs text-gray-500">
-              #{person.ultimaOcorrencia?.ocoId || "-"}
-            </span>
-            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-              isFound()
-                ? 'bg-green-100 text-green-800'
-                : 'bg-red-100 text-red-800'
-            }`}>
-              {isFound() ? 'Encontrado' : 'Desaparecido'}
-            </span>
-          </div>
-        }
+    <Card
+      shadow="sm"
+     
+      withBorder
+      p={0}
+      className="cursor-pointer hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+      onClick={() => onSelect?.(person)}
+      style={{ maxWidth: 240 }}
+    >
+     
+      <Box
+         style={{
+          position: 'relative',
+          height: 192,
+          overflow: 'hidden',         
+          borderTopLeftRadius: 16,     
+          borderTopRightRadius: 16,
+          background: 'linear-gradient(135deg, #1e3a8a, #2563eb, #3b82f6)',
+        }}
       >
-        <p className="text-xs text-gray-500 truncate">
-          {person.ultimaOcorrencia?.localDesaparecimentoConcat || 'Local não informado'}
-        </p>
-      </Card>
-    </div>
-  );
-}
+        {urlFoto ? (
+          <Image
+            src={urlFoto}
+            alt={nome}
+            className="p-2 w-full h-full object-cover"
+            style={{ objectFit: 'contain' }}
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+            }}
+          />
+        ) : (
+          <Box
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%',
+              fontSize: 48,
+              color: 'white',
+            }}
+          >
+            
+          </Box>
+        )}
 
-export default PersonCard
+        
+        <Badge
+          color={isFound ? 'green' : 'red'}
+          variant="filled"
+          size="xs"
+          style={{ position: 'absolute', top: 8, right: 8 }}
+        >
+          {isFound ? 'Encontrado' : 'Desaparecido'}
+        </Badge>
+      </Box>
+
+     
+      <Stack  p="sm">
+        <Text  size="sm" lineClamp={1} className="group-hover:text-indigo-600 transition-colors">
+          {nome}
+        </Text>
+
+        <Stack   color="dimmed">
+          <Group >
+            <Text size="xs">Idade:</Text>
+            <Text size="xs">{idade} anos</Text>
+          </Group>
+          <Group >
+            <Text size="xs">Sexo:</Text>
+            <Text size="xs">{sexo}</Text>
+          </Group>
+          <Group >
+            <Text size="xs">Local:</Text>
+            <Text size="xs" lineClamp={1}>
+              {localDesaparecimentoConcat || 'Não informado'}
+            </Text>
+          </Group>
+        </Stack>
+
+        <Group >
+        
+          <Text size="xs" color="dimmed" style={{ fontFamily: 'monospace' }}>
+            #{ocoId || '-'}
+          </Text>
+        </Group>
+      </Stack>
+    </Card>
+  );
+};
+
+export default PersonCard;

@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 
-import { Search, Filter, ChevronDown, X, User, Calendar } from "lucide-react";
+import { Search, Filter, ChevronDown, X, User, Calendar, Eraser } from "lucide-react";
 import { PessoaFiltroValues } from "@/types/domain/Pessoa";
-import Button from "../ui/Button";
+
+import { ActionIcon, Button, Group, NumberInput, Select, TextInput } from "@mantine/core";
 
 interface PessoaFiltroProps {
   onFilterChange: (filters: PessoaFiltroValues) => void;
@@ -31,24 +32,34 @@ const PessoaFiltro: React.FC<PessoaFiltroProps> = ({ onFilterChange }) => {
     setFilters((prev: any) => ({ ...prev, [field]: value }));
   };
 
+  const handleClear = () => {
+    setFilters({
+      nome: "",
+      status: null,
+      sexo: null,
+      faixaIdadeInicial: 0,
+      faixaIdadeFinal: 0,
+    });
+  };
+
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
+    <div className="max-w-6xl mx-auto px-4 py-6 w-3/4">
       {/* Search Bar + Filter Button */}
-      <div className="flex items-center gap-2">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
-          <input
-            type="text"
-            value={filters.nome}
-            onChange={(e) => handleChange("nome", e.target.value)}
+      <div className="flex justify-center items-center gap-2">
+        
+          <TextInput
+            className="w-3/4"
             placeholder="Buscar pessoa por nome (ex: João)"
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+            radius="md"
+            value={filters.nome}
+            onChange={(e) => handleChange("nome", e.currentTarget.value)}
+           
           />
-        </div>
 
         <Button
             type="button"
             variant="secondary"
+            radius={"md"}
             onClick={() => setShowAdvanced(!showAdvanced)}
             className="flex items-center gap-1 text-sm"
             >
@@ -59,67 +70,79 @@ const PessoaFiltro: React.FC<PessoaFiltroProps> = ({ onFilterChange }) => {
                 className={`transition-transform ${showAdvanced ? "rotate-180" : ""}`}
             />
         </Button>
+        <Button
+       
+          onClick={handleClear}
+          radius={"md"}
+          color="red"
+          rightSection={<Eraser size={14} />}
+        >
+          Limpar
+        </Button>
+       
       </div>
 
      
       {showAdvanced && (
-        <div className="mt-2 flex flex-wrap justify-center gap-4 bg-[#FFFFFF] p-2 rounded-lg">
-         
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Status
-            </label>
-            <select
-              value={filters.status??''}
-              onChange={(e) => handleChange("status", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-100"
-            >
-              <option value="">Todos</option>
-              <option value="DESAPARECIDO">Desaparecido</option>
-              <option value="LOCALIZADO">Localizado</option>
-            </select>
-          </div>
-
+       <Group  mt="md" grow align="flex-start" className="bg-white shadow-md rounded-2xl p-4 items-center">
+          <Select
           
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Sexo
-            </label>
-            <select
-              value={filters.sexo??''}
-              onChange={(e) => handleChange("sexo", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-100"
-            >
-              <option value="">Todos</option>
-              <option value="MASCULINO">Masculino</option>
-              <option value="FEMININO">Feminino</option>
-            </select>
-          </div>
+            label="Status"
+            data={[
+              { value: "DESAPARECIDO", label: "Desaparecido" },
+              { value: "LOCALIZADO", label: "Localizado" },
+              {value: '', label: "Outro"},
+            ]}
+            placeholder="Todos"
+            value={filters.status ?? ""}
+            onChange={(val) => handleChange("status", val || null)}
+            rightSection={<ChevronDown size={16} />}
+          />
 
-        <div className="md:col-span-2">
-    <label className="block text-sm font-medium text-gray-700 mb-1">
-        Faixa Etária
-    </label>
-    <div className="flex gap-4">
-        <input
-        type="number"
-        min={0}
-        value={filters.faixaIdadeInicial}
-        onChange={(e) => handleChange("faixaIdadeInicial", Number(e.target.value))}
-        placeholder="Inicial (ex: 18)"
-        className="w-1/2 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-        />
-        <input
-        type="number"
-        min={0}
-        value={filters.faixaIdadeFinal}
-        onChange={(e) => handleChange("faixaIdadeFinal", Number(e.target.value))}
-        placeholder="Final (ex: 40)"
-        className="w-1/2 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-        />
-    </div>
-    </div>
-        </div>
+          <Select
+            label="Sexo"
+            data={[
+              { value: "MASCULINO", label: "Masculino" },
+              { value: "FEMININO", label: "Feminino" },
+              {value: '', label: "Outro"},
+            ]}
+            placeholder="Todos"
+            value={filters.sexo ?? ""}
+            onChange={(val) => handleChange("sexo", val || null)}
+            rightSection={<ChevronDown size={16} />}
+            
+          />
+
+          <NumberInput
+            label="Faixa Etária Inicial"
+            
+            placeholder="Inicial"
+            min={0}
+            value={filters.faixaIdadeInicial}
+            onChange={(val) => handleChange("faixaIdadeInicial", val || 0)}
+             error={
+              filters.faixaIdadeFinal < filters.faixaIdadeInicial
+                ? 'A faixa inicial não pode ser maior que a final'
+                : null
+            }
+            hideControls 
+          />
+
+          <NumberInput
+            label="Faixa Etária Final"
+            placeholder="Final"
+            min={0}
+            value={filters.faixaIdadeFinal}
+            onChange={(val) => handleChange("faixaIdadeFinal", val || 0)}
+            error={
+                filters.faixaIdadeFinal < filters.faixaIdadeInicial
+                  ? 'A faixa final não pode ser menor que a inicial'
+                  : null
+            }
+            hideControls 
+
+          />
+        </Group>
       )}
     </div>
   );

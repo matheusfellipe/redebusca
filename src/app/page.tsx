@@ -9,14 +9,16 @@ import { useRouter } from 'next/navigation';
 
 import { PaginationResponse } from '@/types/infra/Paginacao';
 import PessoaFiltro from '@/components/domain/PessoaFiltro';
-import { Flex, Pagination } from '@mantine/core';
+import { Flex, Loader, Pagination, Text } from '@mantine/core';
+import { usePessoaList } from '@/hooks/usePessoaList';
+import ErrorMessage from '@/components/domain/ErrorMessage';
 
 export default function Home() {
   
-  const [personData, setPersonData] = useState<PaginationResponse<Pessoa>>({} as PaginationResponse<Pessoa>);
-  const [loading, setLoading] = useState(true);
+  
   const [filters, setFilters] = useState<PessoaFiltroValues>({} as PessoaFiltroValues);
   const [page, setPage] = useState(0);
+  const { personData, loading, error } = usePessoaList(filters, page);
 
 
   const router = useRouter();
@@ -25,23 +27,16 @@ export default function Home() {
       router.push(`/pessoa/${person.id}`);
     };
 
-  useEffect(() => {
-  const fetchData = async () => {
-      
-    
-      const response = await personService.list({
-        ...filters,
-        pagina: page,
-        status: filters.status ?? undefined,
-        sexo: filters.sexo ?? undefined,
-      });
-      console.log("🚀 ~ fetchData ~ response:", response)
-      setPersonData(response || []);
-      setLoading(false);
-     
-    };
-    fetchData();
-  }, []);
+  
+  
+  if (error) return <ErrorMessage message={error} />;
+
+
+
+  const onFiltering = (filters: PessoaFiltroValues) => {
+    setFilters(filters);
+    setPage(0);
+  };
 
 
 
@@ -51,7 +46,7 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50">
     
       
-      <PessoaFiltro onFilterChange={setFilters}/>
+      <PessoaFiltro onFilterChange={onFiltering}/>
 
       
       <main className="max-w-6xl mx-auto px-4 pb-8">
@@ -61,12 +56,11 @@ export default function Home() {
             <p className="mt-2 text-gray-600">Carregando...</p>
           </div>
         ) : (
-          <Flex direction={"column"} className='justify-center gap-4'>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <Flex direction={"column"} className='justify-center items-center gap-4'>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
               {personData?.content.map((pessoa) => (
                 <PersonCard key={pessoa.id} person={pessoa} onSelect={handleSelect} />
               ))}
-              
             </div>
             <Pagination total={personData.totalElements}  value={personData.pageable.pageNumber} onChange={setPage} />
           </Flex>

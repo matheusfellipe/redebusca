@@ -16,6 +16,7 @@ interface PessoaFiltroRequest {
 export const personService = {
   async list({
     status,
+    sexo,
     nome,
     faixaIdadeInicial = 0,
     faixaIdadeFinal = 0,
@@ -27,6 +28,7 @@ export const personService = {
       {
         params: {
           status,
+          sexo,
           nome,
           faixaIdadeInicial,
           faixaIdadeFinal,
