@@ -112,10 +112,10 @@ const PessoaPage: React.FC<Props> = ({ params }) => {
                 <div className="space-y-4 flex-1">
                   {personData.ultimaOcorrencia?.localDesaparecimentoConcat && (
                     <div className=" border-l-4 border-red-400 p-4 rounded-r-lg">
-                      <Text size="sm" className="font-semibold text-red-800 mb-1">
+                      <Text size="sm" className="font-semibold text-black-800 mb-1">
                         📍 Última localização
                       </Text>
-                      <Text size="sm" className="text-red-700">
+                      <Text size="sm" className="text-black-700">
                         {personData.ultimaOcorrencia.localDesaparecimentoConcat}
                       </Text>
                     </div>
@@ -123,10 +123,10 @@ const PessoaPage: React.FC<Props> = ({ params }) => {
 
                   {personData.ultimaOcorrencia?.dtDesaparecimento && (
                     <div className=" border-l-4 border-red-400 p-4 rounded-r-lg">
-                      <Text size="sm" className="font-semibold text-red-800 mb-1">
+                      <Text size="sm" className="font-semibold text-black-800 mb-1">
                         📅 Data do desaparecimento
                       </Text>
-                      <Text size="sm" className="text-red-700">
+                      <Text size="sm" className="text-black-700">
                         {new Date(personData.ultimaOcorrencia.dtDesaparecimento).toLocaleDateString('pt-BR')}
                       </Text>
                     </div>
@@ -147,10 +147,10 @@ const PessoaPage: React.FC<Props> = ({ params }) => {
 
                       {personData.ultimaOcorrencia.ocorrenciaEntrevDesapDTO.vestimentasDesaparecido && (
                         <div className=" border-l-4 border-red-400 p-4 rounded-r-lg">
-                          <Text size="sm" className="font-semibold text-red-800 mb-1">
+                          <Text size="sm" className="font-semibold text-black-800 mb-1">
                             👕 Vestimenta
                           </Text>
-                          <Text size="sm" className="text-red-700">
+                          <Text size="sm" className="text-black-700">
                             {personData.ultimaOcorrencia.ocorrenciaEntrevDesapDTO.vestimentasDesaparecido}
                           </Text>
                         </div>

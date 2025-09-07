@@ -5,7 +5,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TextInput, Textarea, Select, Button, Group, InputBase, FileInput, Text, Image } from "@mantine/core";
 import { IMaskInput } from "react-imask";
-import { Upload, X, ImageIcon } from "lucide-react";
+import { X, ImageIcon } from "lucide-react";
 import { useState } from "react";
 import { notifications } from '@mantine/notifications';
 
