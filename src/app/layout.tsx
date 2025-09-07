@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/ui/Header";
+import { MantineProvider } from "@mantine/core";
 
 const monstserrat  = Roboto({
   subsets: ['latin'],
@@ -26,7 +27,10 @@ export default function RootLayout({
         suppressHydrationWarning={true}
       >
         <Header />
-        {children}
+         <MantineProvider>
+
+          {children}
+         </MantineProvider>
       </body>
     </html>
   );

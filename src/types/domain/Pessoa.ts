@@ -15,5 +15,17 @@ export enum Sexo {
   Feminino = "FEMININO"
 }
 
+export enum Status {
+  Encontrado = "ENCONTRADO",
+  Desaparecido = "DESAPARECIDO"
+}
 
 
+
+export interface PessoaFiltroValues {
+  status: Status|null;
+  sexo: Sexo|null;
+  faixaIdadeInicial: number;
+  faixaIdadeFinal: number;
+  nome: string;
+}

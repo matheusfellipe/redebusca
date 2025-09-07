@@ -1,17 +1,24 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-// import Image from 'next/image';
+
 import { personService } from "@/services/pessoaService";
-import { Pessoa, Sexo } from "@/types/domain/Pessoa";
+import { Pessoa, PessoaFiltroValues, Sexo } from "@/types/domain/Pessoa";
 import PersonCard from '@/components/domain/PessoaCard';
 import { useRouter } from 'next/navigation';
 
+import { PaginationResponse } from '@/types/infra/Paginacao';
+import PessoaFiltro from '@/components/domain/PessoaFiltro';
+import { Flex, Pagination } from '@mantine/core';
+
 export default function Home() {
   
-  const [personData, setPersonData] = useState<Pessoa[]>([]);
+  const [personData, setPersonData] = useState<PaginationResponse<Pessoa>>({} as PaginationResponse<Pessoa>);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [filters, setFilters] = useState<PessoaFiltroValues>({} as PessoaFiltroValues);
+  const [page, setPage] = useState(0);
+
+
   const router = useRouter();
 
   const handleSelect = (person: Pessoa) => {
@@ -20,46 +27,31 @@ export default function Home() {
 
   useEffect(() => {
   const fetchData = async () => {
+      
     
-      const response = await personService.list({});
+      const response = await personService.list({
+        ...filters,
+        pagina: page,
+        status: filters.status ?? undefined,
+        sexo: filters.sexo ?? undefined,
+      });
       console.log("🚀 ~ fetchData ~ response:", response)
-      setPersonData(response.content || []);
+      setPersonData(response || []);
       setLoading(false);
      
     };
     fetchData();
   }, []);
 
-  const filteredData = personData.filter(pessoa => 
-    pessoa.nome.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
-  const getEmoji = (pessoa: Pessoa) => {
-    if (pessoa.idade < 18) return pessoa.sexo === Sexo.Masculino ? '👦' : '👧';
-    if (pessoa.idade >= 60) return pessoa.sexo === Sexo.Masculino ? '👴' : '👵';
-    return pessoa.sexo === Sexo.Masculino ? '👨' : '👩';
-  };
 
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('pt-BR');
-  };
 
-  const isFound = (pessoa: Pessoa) => !!pessoa.ultimaOcorrencia?.dataLocalizacao;
 
   return (
     <div className="min-h-screen bg-gray-50">
     
       
-      <div className="max-w-6xl mx-auto px-4 py-6">
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Buscar por nome..."
-          className="w-full max-w-md px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-        />
-      </div>
+      <PessoaFiltro onFilterChange={setFilters}/>
 
       
       <main className="max-w-6xl mx-auto px-4 pb-8">
@@ -69,14 +61,18 @@ export default function Home() {
             <p className="mt-2 text-gray-600">Carregando...</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredData.map((pessoa) => (
-              <PersonCard key={pessoa.id} person={pessoa} onSelect={handleSelect} />
-            ))}
-          </div>
+          <Flex direction={"column"} className='justify-center gap-4'>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {personData?.content.map((pessoa) => (
+                <PersonCard key={pessoa.id} person={pessoa} onSelect={handleSelect} />
+              ))}
+              
+            </div>
+            <Pagination total={personData.totalElements}  value={personData.pageable.pageNumber} onChange={setPage} />
+          </Flex>
         )}
 
-        {filteredData.length === 0 && !loading && (
+        {personData?.content?.length === 0 && !loading && (
           <div className="text-center py-8">
             <p className="text-gray-600">Nenhum caso encontrado.</p>
           </div>

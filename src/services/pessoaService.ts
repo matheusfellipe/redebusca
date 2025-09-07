@@ -1,9 +1,11 @@
 import { PaginationResponse } from "@/types/infra/Paginacao";
 import api from "./api";
-import { Pessoa } from "@/types/domain/Pessoa";
+import { Pessoa, Sexo, Status } from "@/types/domain/Pessoa";
 
 
 interface PessoaFiltroRequest {
+  status?: Status;
+  sexo?: Sexo;
   nome?: string;
   faixaIdadeInicial?: number;
   faixaIdadeFinal?: number;
@@ -13,6 +15,7 @@ interface PessoaFiltroRequest {
 
 export const personService = {
   async list({
+    status,
     nome,
     faixaIdadeInicial = 0,
     faixaIdadeFinal = 0,
@@ -23,6 +26,7 @@ export const personService = {
       "/pessoas/aberto/filtro",
       {
         params: {
+          status,
           nome,
           faixaIdadeInicial,
           faixaIdadeFinal,

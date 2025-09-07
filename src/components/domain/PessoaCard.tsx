@@ -9,7 +9,7 @@ interface PersonCardProps {
   onSelect?: (person: Pessoa) => void;
 }
 
-export default function PersonCard({ person, onSelect }: PersonCardProps) {
+const PersonCard: React.FC<PersonCardProps> = ({ person, onSelect }: PersonCardProps) => {
   const isFound = () => !!person.ultimaOcorrencia?.dataLocalizacao;
 
   return (
@@ -39,3 +39,5 @@ export default function PersonCard({ person, onSelect }: PersonCardProps) {
     </div>
   );
 }
+
+export default PersonCard
