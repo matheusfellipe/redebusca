@@ -49,6 +49,7 @@ export function usePessoa(id: number) {
         const response = await personService.getById(id);
         setPersonData(response || ({} as Pessoa));
       } catch (err) {
+        console.error('Failed to fetch persons:', err);
         setError("Erro ao carregar caso.");
       } finally {
         setLoading(false);
