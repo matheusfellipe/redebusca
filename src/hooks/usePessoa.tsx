@@ -33,3 +33,30 @@ export function usePessoaList(filters: PessoaFiltroValues, page: number) {
 
   return { personData, loading, error };
 }
+
+export function usePessoa(id: number) {
+  const [personData, setPersonData] = useState<Pessoa>({} as Pessoa);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!id) return;
+
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await personService.getById(id);
+        setPersonData(response || ({} as Pessoa));
+      } catch (err) {
+        setError("Erro ao carregar caso.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
+  return { personData, loading, error };
+}

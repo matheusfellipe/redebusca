@@ -3,9 +3,9 @@
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TextInput, Textarea, Select, Button, Group } from "@mantine/core";
-import { DatePickerInput } from "@mantine/dates";
+import { TextInput, Textarea, Select, Button, Group, InputBase } from "@mantine/core";
 
+import { IMaskInput } from "react-imask";
 
 interface Props {
   personId: number;
@@ -17,8 +17,9 @@ const addInfoSchema = z.object({
   info: z.string().min(5, "Informe pelo menos 5 caracteres"),
   vestimenta: z.string().min(3, "Informe pelo menos 3 caracteres"),
   localAtual: z.string().optional(),
-  dataOcorrencia: z.date().nullable(),
+  dataOcorrencia: z.string().min(10, "Informe a data no formato DD/MM/YYYY"),
   status: z.enum(["DESAPARECIDO", "ENCONTRADO"]).optional(),
+  telefone: z.string().optional(),
 });
 
 export type AddInfoFormData = z.infer<typeof addInfoSchema>;
@@ -31,15 +32,14 @@ const AddInfoForm: React.FC<Props> = ({ personId, onSuccess }) => {
       info: "",
       vestimenta: "",
       localAtual: "",
-      dataOcorrencia: null,
+      dataOcorrencia: "",
       status: "DESAPARECIDO",
+      telefone: "",
     },
   });
 
-  // 3️⃣ Envio do formulário
   const onSubmit = async (data: AddInfoFormData) => {
     try {
-      // Simula envio para API
       await fetch(`/api/person/${personId}/add-info`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -53,7 +53,7 @@ const AddInfoForm: React.FC<Props> = ({ personId, onSuccess }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-3">
+    <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-3 bg-gray-50 p-4">
       <Controller
         name="info"
         control={control}
@@ -92,18 +92,21 @@ const AddInfoForm: React.FC<Props> = ({ personId, onSuccess }) => {
         )}
       />
 
-      <Controller
-        name="dataOcorrencia"
-        control={control}
-        render={({ field }) => (
-          <DatePickerInput
-            label="Data da Ocorrência"
-            placeholder="Selecione a data"
-            {...field}
-            error={errors.dataOcorrencia?.message}
-          />
-        )}
-      />
+      
+     <InputBase
+      label="Data Ocorrência"
+      component={IMaskInput}
+      mask="00/00/0000"
+      placeholder="Data Ocorrência"
+    />
+
+    <InputBase
+      label="Telefone"
+      component={IMaskInput}
+      mask="(00) 00000-0000"
+      placeholder="Telefone"
+    />
+
 
       <Controller
         name="status"

@@ -5,11 +5,12 @@ interface CardProps {
   subtitle?: string;
   children?: React.ReactNode;
   footer?: React.ReactNode;
+  className?: string;
 }
 
-const Card: React.FC<CardProps> = ({ title, subtitle, children, footer }) => {
+const Card: React.FC<CardProps> = ({ title, subtitle, children, footer,className }) => {
   return (
-    <div className="bg-white shadow-md rounded-2xl p-4 w-full max-w-sm border border-gray-100">
+    <div className={`bg-white shadow-md rounded-2xl p-4 w-full max-w-sm border border-gray-100 ${className}`}>
      
       {(title || subtitle) && (
         <div className="mb-3">

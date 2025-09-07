@@ -1,17 +1,17 @@
 'use client';
 
-import Card from "@/components/ui/Card";
 import { personService } from "@/services/pessoaService";
 import { Pessoa } from "@/types/domain/Pessoa";
 import { Suspense, use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Loader } from "@mantine/core";
+import { Button, Card, Loader, Text, Group, Image, Badge, Stack } from "@mantine/core";
 import dynamic from "next/dynamic";
-
+import ErrorMessage from "@/components/domain/ErrorMessage";
+import { usePessoa } from "@/hooks/usePessoa";
 
 const AddInfoForm = dynamic(() => import('@/components/domain/AddInfoForm'), {
   loading: () => <Loader size="sm" />,
-  ssr: false, 
+  ssr: false,
 });
 
 interface Props {
@@ -22,92 +22,90 @@ const PessoaPage: React.FC<Props> = ({ params }) => {
   const { id } = use(params);
   const router = useRouter();
 
-  const [personData, setPersonData] = useState<Pessoa>({} as Pessoa);
-  const [loading, setLoading] = useState(true);
+ const { personData, loading, error } = usePessoa(id);
   const [showForm, setShowForm] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await personService.getById(id);
-        setPersonData(response || ({} as Pessoa));
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [id]);
 
-  if (loading) return <Loader color="blue" />;
+  
+
+
+  if (loading) return  <div className="text-center py-8">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <p className="mt-2 text-gray-600">Carregando...</p>
+          </div>;
+
+  if (error) return <ErrorMessage message={error} />;
 
   const statusLabel = personData.ultimaOcorrencia?.encontradoVivo ? "Encontrado" : "Desaparecido";
-  const statusColor = personData.ultimaOcorrencia?.encontradoVivo ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800";
+  const statusColor = personData.ultimaOcorrencia?.encontradoVivo ? "green" : "red";
 
   return (
-    <div className="p-4 flex flex-col items-center w-full max-w-xl">
-      <Button
-        variant="outline"
-        size="sm"
-        className="mb-4 self-start"
-        onClick={() => router.push("/")}
-      >
+    <Stack align="center"  className="p-4 w-full max-w-2xl mx-auto">
+      <Button variant="outline" size="sm" onClick={() => router.push("/")}>
         ← Voltar para Home
       </Button>
 
-      <Card
-        title={personData.nome}
-        subtitle={`${personData.idade} anos • ${personData.sexo}`}
-        footer={
-          <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColor}`}>
-            {statusLabel}
-          </span>
-        }
-      >
-        {personData.urlFoto && (
-          <img src={personData.urlFoto} alt={personData.nome} className="w-32 h-32 rounded-lg mb-4" />
-        )}
+      <Card shadow="sm" padding="lg" radius="md" withBorder className="w-full">
+        <Group align="flex-start">
+          {personData.urlFoto && (
+            <Image
+              src={personData.urlFoto}
+              alt={personData.nome}
+              width={128}
+              height={128}
+              radius="md"
+              fit="cover"
+            />
+          )}
 
-        <p className="text-sm text-gray-600 mb-2">
-          Última localização: {personData.ultimaOcorrencia?.localDesaparecimentoConcat || "Não informado"}
-        </p>
+          <Stack  className="flex-1">
+            <Text  size="xl">{personData.nome}</Text>
+            <Text color="dimmed">{personData.idade} anos • {personData.sexo}</Text>
 
-        {personData.ultimaOcorrencia?.dtDesaparecimento && (
-          <p className="text-sm text-gray-600 mb-2">
-            Data desaparecimento: {new Date(personData.ultimaOcorrencia.dtDesaparecimento).toLocaleDateString()}
-          </p>
-        )}
+            <Badge color={statusColor} variant="light">
+              {statusLabel}
+            </Badge>
 
-        {personData.ultimaOcorrencia?.ocorrenciaEntrevDesapDTO && (
-          <>
-            <p className="text-sm text-gray-600 mb-1">
-              Informação: {personData.ultimaOcorrencia.ocorrenciaEntrevDesapDTO.informacao}
-            </p>
-            <p className="text-sm text-gray-600 mb-1">
-              Vestimenta: {personData.ultimaOcorrencia.ocorrenciaEntrevDesapDTO.vestimentasDesaparecido}
-            </p>
-          </>
-        )}
+            <Text size="sm" color="gray.6">
+              Última localização: {personData.ultimaOcorrencia?.localDesaparecimentoConcat || "Não informado"}
+            </Text>
 
-        
+            {personData.ultimaOcorrencia?.dtDesaparecimento && (
+              <Text size="sm" color="gray.6">
+                Data desaparecimento: {new Date(personData.ultimaOcorrencia.dtDesaparecimento).toLocaleDateString()}
+              </Text>
+            )}
+
+            {personData.ultimaOcorrencia?.ocorrenciaEntrevDesapDTO && (
+              <>
+                <Text size="sm" color="gray.6">
+                  Informação: {personData.ultimaOcorrencia.ocorrenciaEntrevDesapDTO.informacao}
+                </Text>
+                <Text size="sm" color="gray.6">
+                  Vestimenta: {personData.ultimaOcorrencia.ocorrenciaEntrevDesapDTO.vestimentasDesaparecido}
+                </Text>
+              </>
+            )}
+          </Stack>
+        </Group>
+
         <Button
           variant="light"
           size="sm"
-          className="mt-4"
+          fullWidth
+          mt="md"
           onClick={() => setShowForm(prev => !prev)}
         >
           {showForm ? "Fechar formulário" : "Adicionar informações"}
         </Button>
 
-        {/* Lazy loaded form */}
         {showForm && (
           <Suspense fallback={<Loader size="sm" />}>
             <AddInfoForm personId={personData.id} />
           </Suspense>
         )}
       </Card>
-    </div>
+    </Stack>
   );
 };
 

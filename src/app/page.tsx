@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 
 import PessoaFiltro from '@/components/domain/PessoaFiltro';
 import { Flex, Pagination } from '@mantine/core';
-import { usePessoaList } from '@/hooks/usePessoaList';
+import { usePessoaList } from '@/hooks/usePessoa';
 import ErrorMessage from '@/components/domain/ErrorMessage';
 
 export default function Home() {
