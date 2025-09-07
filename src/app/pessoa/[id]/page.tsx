@@ -1,8 +1,6 @@
 'use client';
 
-import { personService } from "@/services/pessoaService";
-import { Pessoa } from "@/types/domain/Pessoa";
-import { Suspense, use, useEffect, useState } from "react";
+import { Suspense, use, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Card, Loader, Text, Group, Image, Badge, Stack } from "@mantine/core";
 import dynamic from "next/dynamic";
