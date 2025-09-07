@@ -17,6 +17,7 @@ export default function Home() {
   const [filters, setFilters] = useState<PessoaFiltroValues>({} as PessoaFiltroValues);
   const [page, setPage] = useState(0);
   const { personData, loading, error } = usePessoaList(filters, page);
+  console.log("🚀 ~ Home ~ personData:", personData)
 
 
   const router = useRouter();
@@ -60,7 +61,7 @@ export default function Home() {
                 <PersonCard key={pessoa.id} person={pessoa} onSelect={handleSelect} />
               ))}
             </div>
-            <Pagination total={personData.totalElements}  value={personData.pageable.pageNumber} onChange={setPage} />
+            <Pagination total={personData.totalPages}  value={personData.pageable.pageNumber} onChange={setPage} />
           </Flex>
         )}
 

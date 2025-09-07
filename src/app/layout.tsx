@@ -4,6 +4,8 @@ import "./globals.css";
 import Header from "@/components/ui/Header";
 import { MantineProvider } from "@mantine/core";
 import '@mantine/dates/styles.css';
+import '@mantine/notifications/styles.css';
+import { Notifications } from "@mantine/notifications";
 
 const monstserrat  = Roboto({
   subsets: ['latin'],
@@ -29,7 +31,7 @@ export default function RootLayout({
       >
         <Header />
          <MantineProvider>
-
+           <Notifications />
           {children}
          </MantineProvider>
       </body>
